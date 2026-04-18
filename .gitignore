@@ -1,0 +1,5 @@
+build/
+*.txt
+*.zip
+Thumbs.db
+.DS_Store
