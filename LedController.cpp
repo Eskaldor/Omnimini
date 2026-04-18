@@ -58,7 +58,8 @@ uint32_t LedController::colorWheel(uint8_t pos) const {
 
 void LedController::applyColorToStrip(uint32_t color, uint8_t bri) {
     strip_.setBrightness(bri);
-    strip_.setPixelColor(0, color);
+    // Применяем встроенную гамма-коррекцию NeoPixel
+    strip_.setPixelColor(0, strip_.gamma32(color));
     strip_.show();
 }
 
