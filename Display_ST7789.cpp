@@ -215,9 +215,15 @@ void LCD_addWindow(uint16_t Xstart, uint16_t Ystart, uint16_t Xend, uint16_t Yen
   uint16_t Show_Width = Xend - Xstart + 1;
   uint16_t Show_Height = Yend - Ystart + 1;
   uint32_t numBytes = Show_Width * Show_Height * sizeof(uint16_t);
-  uint8_t Read_D[numBytes];
+  const uint32_t spiChunkSize = 4096;
+  uint8_t *writeData = (uint8_t*)color;
   LCD_SetCursor(Xstart, Ystart, Xend, Yend);
-  LCD_WriteData_nbyte((uint8_t*)color, Read_D, numBytes);        
+  while (numBytes > 0) {
+    uint32_t chunk = numBytes > spiChunkSize ? spiChunkSize : numBytes;
+    LCD_WriteData_nbyte(writeData, NULL, chunk);
+    writeData += chunk;
+    numBytes -= chunk;
+  }
 }
 // backlight
 void Backlight_Init(void)
@@ -229,7 +235,7 @@ void Backlight_Init(void)
 void Set_Backlight(uint8_t Light)                        //
 {
 
-  if(Light > 100 || Light < 0)
+  if(Light > 100)
     printf("Set Backlight parameters in the range of 0 to 100 \r\n");
   else{
     uint32_t Backlight = Light*10;

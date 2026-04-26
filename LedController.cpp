@@ -42,6 +42,9 @@ void LedController::updateLedFromConfig(const String& mode, const std::vector<ui
     }
 
     currentColorIdx_ = 0;
+    if (state_ == Static) {
+        applyColorToStrip(colors_[0], (uint8_t)brightness_);
+    }
 }
 
 uint32_t LedController::colorWheel(uint8_t pos) const {
@@ -64,11 +67,14 @@ void LedController::applyColorToStrip(uint32_t color, uint8_t bri) {
 }
 
 void LedController::tick() {
+    if (state_ == Static) {
+        return;
+    }
+
     const uint32_t now = millis();
 
     switch (state_) {
         case Static:
-            applyColorToStrip(colors_[0], (uint8_t)brightness_);
             break;
 
         case Cycle: {
